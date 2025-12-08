@@ -20,6 +20,13 @@ export const ExhibitorList: React.FC<ExhibitorListProps> = ({ exhibitors, onDele
     return matchesSearch && matchesType;
   });
 
+  const formatBRL = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden animate-in fade-in duration-300">
       <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -117,7 +124,7 @@ export const ExhibitorList: React.FC<ExhibitorListProps> = ({ exhibitors, onDele
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right font-mono font-medium text-emerald-600">
-                    R$ {exhibitor.businessVolume.toLocaleString('pt-BR')}
+                    {formatBRL(exhibitor.businessVolume)}
                   </td>
                   <td className="px-6 py-4 text-right text-slate-700 font-medium">
                     {exhibitor.visitors.toLocaleString('pt-BR')}

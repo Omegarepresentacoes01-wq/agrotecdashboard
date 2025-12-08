@@ -14,6 +14,25 @@ interface DashboardProps {
 
 const COLORS = ['#059669', '#10b981', '#34d399', '#6ee7b7'];
 
+// Helper para formatar moeda BRL
+const formatBRL = (value: number) => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    maximumFractionDigits: 2
+  }).format(value);
+};
+
+// Helper compact (ex: 1.5M) para gráficos
+const formatCompactBRL = (value: number) => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    notation: 'compact',
+    maximumFractionDigits: 1
+  }).format(value);
+};
+
 export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPdfMode, setIsPdfMode] = useState(false);
@@ -190,7 +209,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           title="Volume de Negócios" 
-          value={`R$ ${totalVolume.toLocaleString('pt-BR')}`} 
+          value={formatBRL(totalVolume)}
           icon={<Wallet className="w-6 h-6" />}
           trend="+12% vs. 2024"
         />
@@ -207,7 +226,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
         />
         <StatCard 
           title="Ticket Médio" 
-          value={`R$ ${(exhibitors.length ? totalVolume / exhibitors.length : 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`} 
+          value={formatBRL(exhibitors.length ? totalVolume / exhibitors.length : 0)}
           icon={<TrendingUp className="w-6 h-6" />}
           colorClass="bg-gradient-to-br from-white to-emerald-50 border-emerald-100"
         />
@@ -229,11 +248,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
               <BarChart data={cityChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="name" tick={{fill: '#64748b', fontSize: 11}} axisLine={false} tickLine={false} dy={10} />
-                <YAxis tick={{fill: '#64748b', fontSize: 11}} axisLine={false} tickLine={false} tickFormatter={(value) => `R$${value/1000}k`} />
+                <YAxis tick={{fill: '#64748b', fontSize: 11}} axisLine={false} tickLine={false} tickFormatter={(value) => formatCompactBRL(value)} />
                 <RechartsTooltip 
                   cursor={{fill: '#f8fafc'}}
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontFamily: 'Inter' }}
-                  formatter={(value: number) => [`R$ ${value.toLocaleString('pt-BR')}`, 'Volume']}
+                  formatter={(value: number) => [formatBRL(value), 'Volume']}
                 />
                 <Bar dataKey="value" fill="#10b981" radius={[6, 6, 0, 0]} barSize={40} />
               </BarChart>
@@ -306,7 +325,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
                 </span>
               </div>
               <p className="text-emerald-100/60 text-sm font-medium uppercase tracking-wider mb-1">Volume Projetado</p>
-              <h4 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">R$ {projVolume.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}</h4>
+              <h4 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">{formatBRL(projVolume)}</h4>
               <p className="text-xs text-emerald-200/40 mt-3 font-light">Meta de crescimento financeiro</p>
             </div>
 
@@ -364,7 +383,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
                     </span>
                 </td>
                 <td className="py-3 px-4">{ex.city}</td>
-                <td className="py-3 px-4 text-right font-mono">{ex.businessVolume.toLocaleString('pt-BR')}</td>
+                <td className="py-3 px-4 text-right font-mono">{formatBRL(ex.businessVolume)}</td>
                 <td className="py-3 px-4 text-right">{ex.visitors}</td>
               </tr>
             ))}
@@ -372,7 +391,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
           <tfoot>
             <tr className="bg-gray-100 font-bold text-gray-800">
                 <td className="py-3 px-4" colSpan={3}>TOTAIS</td>
-                <td className="py-3 px-4 text-right">R$ {totalVolume.toLocaleString('pt-BR')}</td>
+                <td className="py-3 px-4 text-right">{formatBRL(totalVolume)}</td>
                 <td className="py-3 px-4 text-right">{totalVisitors}</td>
             </tr>
           </tfoot>
@@ -386,7 +405,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
                  <p className="text-xs text-gray-500">Secretário SEMAGRIC</p>
              </div>
              <div className="text-right text-xs text-gray-400">
-                 <p>Documento gerado via AGRITEC Portal</p>
+                 <p>Documento gerado via AGROTEC Portal</p>
                  <p>ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
              </div>
         </div>

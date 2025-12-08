@@ -19,6 +19,16 @@ export const ExhibitorForm: React.FC<ExhibitorFormProps> = ({ isOpen, onClose, o
     visitors: 0
   });
 
+  const [displayVolume, setDisplayVolume] = useState('');
+
+  // Formata número para moeda BRL (string)
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  };
+
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -29,6 +39,8 @@ export const ExhibitorForm: React.FC<ExhibitorFormProps> = ({ isOpen, onClose, o
         businessVolume: initialData.businessVolume,
         visitors: initialData.visitors
       });
+      // Define o valor visual formatado
+      setDisplayVolume(formatCurrency(initialData.businessVolume));
     } else {
       setFormData({
         name: '',
@@ -38,10 +50,27 @@ export const ExhibitorForm: React.FC<ExhibitorFormProps> = ({ isOpen, onClose, o
         businessVolume: 0,
         visitors: 0
       });
+      setDisplayVolume('');
     }
   }, [initialData, isOpen]);
 
   if (!isOpen) return null;
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Remove tudo que não for dígito
+    const value = e.target.value.replace(/\D/g, "");
+    
+    // Converte para número (centavos)
+    const numberValue = Number(value) / 100;
+    
+    setFormData({ ...formData, businessVolume: numberValue });
+    
+    // Atualiza o display visualmente formatado
+    setDisplayVolume(new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(numberValue));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,15 +142,15 @@ export const ExhibitorForm: React.FC<ExhibitorFormProps> = ({ isOpen, onClose, o
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Volume de Negócios (R$)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Volume de Negócios</label>
               <input 
                 required
-                type="number" 
-                min="0"
-                step="0.01"
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
-                value={formData.businessVolume}
-                onChange={(e) => setFormData({...formData, businessVolume: Number(e.target.value)})}
+                type="text" 
+                inputMode="numeric"
+                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-mono text-emerald-700 font-semibold"
+                value={displayVolume}
+                onChange={handleVolumeChange}
+                placeholder="R$ 0,00"
               />
             </div>
             <div>
